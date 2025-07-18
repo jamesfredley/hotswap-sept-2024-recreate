@@ -3,7 +3,7 @@ buildscript {
         maven { url "https://repo.grails.org/grails/core/" }
     }
     dependencies {
-        classpath "org.grails:grails-gradle-plugin:7.0.0-SNAPSHOT"
+        classpath "org.grails:grails-gradle-plugin:$grailsGradlePluginVersion"
     }
 }
 
@@ -34,36 +34,163 @@ configurations {
         exclude group: "org.apache.groovy", module: "groovy-ant"
         exclude group: "org.junit.jupiter", module: "junit-jupiter-api"
         exclude group: "org.apache.ant", module: "ant"
+        exclude group: "org.springframework.boot", module: "spring-boot-starter-web"
+
+        resolutionStrategy {
+            force "org.grails:grails-core:$grailsVersion"
+            force "org.grails:grails-bootstrap:$grailsVersion"
+            force "org.grails:grails-spring:$grailsVersion"
+            force "org.grails:grails-web:$grailsVersion"
+            force "org.grails:grails-web-common:$grailsVersion"
+            force "org.grails:grails-encoder:$grailsVersion"
+            force "org.grails:grails-web-databinding:$grailsVersion"
+            force "org.grails:grails-web-url-mappings:$grailsVersion"
+
+            force "org.grails:grails-bom:$grailsBomVersion"
+            // Force Spring Boot modules to 3.3.4 (add more modules if dependency insight shows others conflicting)
+            force 'org.springframework.boot:spring-boot:3.3.4'
+            force 'org.springframework.boot:spring-boot-autoconfigure:3.3.4'
+            force 'org.springframework.boot:spring-boot-configuration-processor:3.3.4'
+            force 'org.springframework.boot:spring-boot-starter:3.3.4'  // Adjust based on your starters, e.g., spring-boot-starter-web
+            force 'org.springframework.boot:spring-boot-actuator-autoconfigure:3.3.4'
+            force 'org.springframework.boot:spring-boot-actuator:3.3.4'
+
+            // Force Spring Framework modules to 6.1.13
+            force 'org.springframework:spring-core:6.1.13'
+            force 'org.springframework:spring-context:6.1.13'  // Add others like spring-beans if needed
+        }
+    }
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.boot:spring-boot-dependencies:${springBootVersion}"  // 3.3.4
+    }
+}
+
+configurations {
+    hotswapAgent {
+        canBeConsumed = false
+        canBeResolved = true
+        transitive = false
     }
 }
 
 dependencies {
-    profile "org.grails.profiles:web"
-    implementation("org.grails:grails-core")
-    implementation("org.grails:grails-logging")
-    implementation("org.grails:grails-plugin-databinding")
-    implementation("org.grails:grails-plugin-i18n")
-    implementation("org.grails:grails-plugin-interceptors")
-    implementation("org.grails:grails-plugin-rest")
-    implementation("org.grails:grails-plugin-services")
-    implementation("org.grails:grails-plugin-url-mappings")
-    implementation("org.grails:grails-web-boot")
-    implementation("org.grails.plugins:gsp")
-    implementation("org.grails.plugins:hibernate5")
-    implementation("org.grails.plugins:scaffolding")
-    implementation("org.sitemesh:grails-plugin-sitemesh3:7.0.0-SNAPSHOT")
-    implementation("org.springframework.boot:spring-boot-autoconfigure")
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
-    implementation("org.springframework.boot:spring-boot-starter-logging")
-    implementation("org.springframework.boot:spring-boot-starter-tomcat")
-    implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation "org.grails.plugins:spring-security-core:7.0.0-SNAPSHOT"
-    console("org.grails:grails-console")
+    profile "org.grails.profiles:web:$profileVersion"
+    implementation "org.springframework.boot:spring-boot:$springBootVersion"
+    implementation("org.grails:grails-core:$grailsVersion")
+    implementation("org.grails:grails-bootstrap:$grailsVersion")
+    implementation("org.grails:grails-spring:$grailsVersion")
+
+    implementation("org.grails:grails-web:$grailsVersion")
+    implementation("org.grails:grails-web-common:$grailsVersion")
+    implementation("org.grails:grails-encoder:$grailsVersion")
+    implementation("org.grails:grails-web-databinding:$grailsVersion")
+    implementation("org.grails:grails-web-url-mappings:$grailsVersion")
+    implementation("org.grails:grails-core:$grailsVersion")
+    implementation("org.grails:grails-databinding:$grailsVersion")
+    implementation("org.grails:grails-gsp:$gspVersion")
+    implementation("org.grails:grails-taglib:$gspVersion")
+    implementation("org.grails:grails-web-mvc:$grailsVersion")
+    implementation("org.grails:grails-web-gsp:$gspVersion")
+    implementation("org.grails:grails-web-taglib:$gspVersion")
+    implementation("org.grails:grails-plugin-controllers:$grailsVersion")
+    implementation("org.grails:grails-plugin-validation:$grailsVersion")
+    implementation("org.grails:grails-plugin-domain-class:$grailsVersion")
+    implementation("org.grails:grails-plugin-mimetypes:$grailsVersion")
+    implementation("org.grails.plugins:converters:$convertersVersion")
+
+    implementation("org.grails:grails-plugin-datasource:$grailsVersion")
+    implementation("org.grails:grails-web-jsp:$gspVersion")
+    implementation("org.grails:grails-plugin-codecs:$grailsVersion")
+    implementation("org.grails:grails-dependencies:$grailsVersion")
+    implementation("org.grails.plugins:async:$asyncVersion")
+    implementation("org.grails:grails-async:$asyncVersion")
+
+    implementation("org.grails:grails-events-compat:$asyncVersion")
+    implementation("org.grails:grails-events:$asyncVersion")
+    implementation("org.grails:grails-events-transform:$asyncVersion")
+    implementation("org.grails.plugins:events:$asyncVersion")
+
+    implementation("org.grails.plugins:fields:$fieldsVersion")
+
+
+    implementation("org.grails:grails-logging:$grailsVersion")
+    implementation("org.grails:grails-plugin-databinding:$grailsVersion")
+    implementation("org.grails:grails-plugin-i18n:$grailsVersion")
+    implementation("org.grails:grails-plugin-interceptors:$grailsVersion")
+    implementation("org.grails:grails-plugin-rest:$grailsVersion")
+    implementation("org.grails:grails-plugin-services:$grailsVersion")
+    implementation("org.grails:grails-plugin-url-mappings:$grailsVersion")
+    implementation("org.grails:grails-web-boot:$grailsVersion")
+    implementation("org.grails.plugins:gsp:$gspVersion")
+    implementation("org.grails:grails-web-gsp-taglib:$gspVersion")
+
+
+    implementation("org.grails:grails-datastore-core:$gormVersion")
+    implementation("org.grails:grails-datastore-gorm-validation:$gormVersion")
+    implementation("org.grails:grails-datastore-gorm:$gormVersion")
+    implementation("org.grails:grails-datastore-gorm-support:$gormVersion")
+    implementation("org.grails:grails-datastore-web:$gormVersion")
+
+    implementation("org.grails.plugins:hibernate5:$hibernate5Version")
+    implementation("org.grails:grails-datastore-gorm-hibernate5:$datastoreGormHhibernate5Version")
+    implementation("org.grails.plugins:scaffolding:$scaffoldingVersion")
+    // OSSRH did not have old enough snapshots of org.sitemesh:grails-plugin-sitemesh3
+    // so using a locally build jar instead
+    implementation fileTree(dir: 'lib', include: ['grails-plugin-sitemesh3-7.0.0-SNAPSHOT.jar'])
+    implementation("org.sitemesh:sitemesh:3.2.1")
+    implementation("org.springframework.boot:spring-boot-autoconfigure:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-actuator:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-logging:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-tomcat:$springBootVersion")
+    implementation("org.springframework.boot:spring-boot-starter-validation:$springBootVersion")
+//    implementation "org.grails.plugins:spring-security-core:$springSecurityCoreVersion"
+    implementation 'org.springframework.boot:spring-boot-actuator:3.3.4'
+    implementation 'org.springframework.boot:spring-boot-actuator-autoconfigure:3.3.4'
+//    console("org.grails:grails-console:$grailsVersion")
     runtimeOnly("com.bertramlabs.plugins:asset-pipeline-grails:5.0.1")
     runtimeOnly("com.h2database:h2")
-    runtimeOnly("org.apache.tomcat:tomcat-jdbc")
+    runtimeOnly("org.apache.tomcat:tomcat-jdbc:$tomcatJDBCVersion")
     runtimeOnly("org.fusesource.jansi:jansi:1.18")
+    hotswapAgent "org.hotswapagent:hotswap-agent:2.0.1"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+        vendor = JvmVendorSpec.JETBRAINS
+    }
+}
+
+tasks.register('downloadHotswapAgent') {
+    description = 'Resolves HotswapAgent JAR from Maven Central and places it in the toolchain JDK\'s lib/hotswap directory'
+    group = 'build'
+
+    def targetDir = new File(project.services.get(JavaToolchainService)
+            .launcherFor(java.toolchain).get().metadata.installationPath.asFile,
+            'lib/hotswap')
+
+    def targetFile = new File(targetDir, 'hotswap-agent.jar')
+
+    inputs.file configurations.hotswapAgent.singleFile
+    outputs.file targetFile
+
+    doLast {
+        targetDir.mkdirs()
+
+        def agentJar = configurations.hotswapAgent.singleFile
+
+        // Copy and rename to hotswap-agent.jar
+        println "Resolving HotswapAgent ${agentJar.name} from Maven Central and copying to $targetFile"
+        copy {
+            from agentJar
+            into targetDir
+            rename agentJar.name, 'hotswap-agent.jar'
+        }
+    }
 }
 
 application {
@@ -82,14 +209,10 @@ tasks.withType(Test) {
     systemProperty 'webdriver.gecko.driver', "${System.getenv('GECKOWEBDRIVER')}/geckodriver"
 }
 
-// requires JetBrains Java
-// https://github.com/HotswapProjects/HotswapAgent/releases
-// sdk install java 21.0.4-jbr
-// mkdir ~/.sdkman/candidates/java/21.0.4-jbr/lib/hotswap/
-// cp lib/hotswap-agent-2.0.1.jar ~/.sdkman/candidates/java/21.0.4-jbr/lib/hotswap/hotswap-agent.jar
 bootRun {
     jvmArgs(
             '-XX:+AllowEnhancedClassRedefinition',
             '-javaagent:lib/groovyReset.jar',
             '-XX:HotswapAgent=fatjar')
+    dependsOn 'downloadHotswapAgent'
 }
